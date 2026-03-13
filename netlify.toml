@@ -1,3 +1,8 @@
 [build]
-  command = "curl https://sh.rustup.rs -sSf | sh -s -- -y && export PATH=$HOME/.cargo/bin:$PATH && npm run build"
+  command = "npm run build"
   publish = "dashboard/build"
+
+[[plugins]]
+  package = "@netlify/plugin-local-install-core"
+  [plugins.inputs]
+    preinstall = "curl https://sh.rustup.rs -sSf | sh -s -- -y && export PATH=$HOME/.cargo/bin:$PATH"
