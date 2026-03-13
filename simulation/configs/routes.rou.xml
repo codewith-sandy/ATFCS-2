@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SUMO Route Definitions
+Vehicle routes for 4-way intersection simulation
+-->
+<routes>
+    <!-- Vehicle Types -->
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" maxSpeed="30" guiShape="passenger"/>
+    <vType id="truck" accel="1.3" decel="4.0" sigma="0.5" length="12" maxSpeed="25" guiShape="truck"/>
+    <vType id="bus" accel="1.2" decel="4.0" sigma="0.5" length="12" maxSpeed="20" guiShape="bus"/>
+    <vType id="emergency" accel="3.0" decel="5.0" sigma="0.3" length="6" maxSpeed="40" guiShape="emergency"/>
+    
+    <!-- Route Definitions -->
+    <!-- North to South -->
+    <route id="north_south" edges="north_to_center center_to_south"/>
+    <!-- North to East -->
+    <route id="north_east" edges="north_to_center center_to_east"/>
+    <!-- North to West -->
+    <route id="north_west" edges="north_to_center center_to_west"/>
+    
+    <!-- South to North -->
+    <route id="south_north" edges="south_to_center center_to_north"/>
+    <!-- South to East -->
+    <route id="south_east" edges="south_to_center center_to_east"/>
+    <!-- South to West -->
+    <route id="south_west" edges="south_to_center center_to_west"/>
+    
+    <!-- East to West -->
+    <route id="east_west" edges="east_to_center center_to_west"/>
+    <!-- East to North -->
+    <route id="east_north" edges="east_to_center center_to_north"/>
+    <!-- East to South -->
+    <route id="east_south" edges="east_to_center center_to_south"/>
+    
+    <!-- West to East -->
+    <route id="west_east" edges="west_to_center center_to_east"/>
+    <!-- West to North -->
+    <route id="west_north" edges="west_to_center center_to_north"/>
+    <!-- West to South -->
+    <route id="west_south" edges="west_to_center center_to_south"/>
+    
+    <!-- Vehicle Flows (vehicles per hour) -->
+    <!-- Morning rush hour pattern (7:00-9:00) -->
+    <flow id="flow_ns" type="car" route="north_south" begin="0" end="3600" probability="0.15" departLane="random"/>
+    <flow id="flow_sn" type="car" route="south_north" begin="0" end="3600" probability="0.15" departLane="random"/>
+    <flow id="flow_ew" type="car" route="east_west" begin="0" end="3600" probability="0.12" departLane="random"/>
+    <flow id="flow_we" type="car" route="west_east" begin="0" end="3600" probability="0.12" departLane="random"/>
+    
+    <!-- Turn movements -->
+    <flow id="flow_ne" type="car" route="north_east" begin="0" end="3600" probability="0.05" departLane="random"/>
+    <flow id="flow_nw" type="car" route="north_west" begin="0" end="3600" probability="0.05" departLane="random"/>
+    <flow id="flow_se" type="car" route="south_east" begin="0" end="3600" probability="0.05" departLane="random"/>
+    <flow id="flow_sw" type="car" route="south_west" begin="0" end="3600" probability="0.05" departLane="random"/>
+    
+    <!-- Trucks -->
+    <flow id="flow_truck_ns" type="truck" route="north_south" begin="0" end="3600" probability="0.02" departLane="0"/>
+    <flow id="flow_truck_ew" type="truck" route="east_west" begin="0" end="3600" probability="0.02" departLane="0"/>
+    
+    <!-- Buses -->
+    <flow id="flow_bus_ns" type="bus" route="north_south" begin="0" end="3600" probability="0.01" departLane="0"/>
+    <flow id="flow_bus_ew" type="bus" route="east_west" begin="0" end="3600" probability="0.01" departLane="0"/>
+</routes>

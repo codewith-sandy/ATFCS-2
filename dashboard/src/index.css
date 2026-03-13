@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Animation classes */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Traffic light colors */
+.light-red {
+  background-color: #ef4444;
+  box-shadow: 0 0 10px #ef4444;
+}
+
+.light-yellow {
+  background-color: #eab308;
+  box-shadow: 0 0 10px #eab308;
+}
+
+.light-green {
+  background-color: #22c55e;
+  box-shadow: 0 0 10px #22c55e;
+}
+
+.light-off {
+  background-color: #374151;
+}
+
+/* Card styles */
+.card {
+  @apply bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-700;
+}
+
+.card-header {
+  @apply text-lg font-semibold text-gray-100 mb-4;
+}
+
+/* Metric card */
+.metric-card {
+  @apply bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-gray-700;
+}
+
+.metric-value {
+  @apply text-3xl font-bold text-white;
+}
+
+.metric-label {
+  @apply text-sm text-gray-400 mt-1;
+}
+
+/* Status indicators */
+.status-dot {
+  @apply w-3 h-3 rounded-full;
+}
+
+.status-online {
+  @apply bg-green-500;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.status-offline {
+  @apply bg-red-500;
+}
+
+.status-warning {
+  @apply bg-yellow-500;
+}
+
+/* Chart container */
+.chart-container {
+  @apply bg-gray-800 rounded-xl p-4 border border-gray-700;
+}
+
+/* Table styles */
+.data-table {
+  @apply w-full text-sm text-left text-gray-300;
+}
+
+.data-table thead {
+  @apply text-xs text-gray-400 uppercase bg-gray-700;
+}
+
+.data-table th {
+  @apply px-4 py-3;
+}
+
+.data-table td {
+  @apply px-4 py-3 border-b border-gray-700;
+}
+
+.data-table tbody tr:hover {
+  @apply bg-gray-700;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+}
+
+.btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+}
+
+.btn-success {
+  @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+}
+
+/* Emergency alert */
+.emergency-alert {
+  @apply bg-red-900 border-2 border-red-500 rounded-xl p-4;
+  animation: pulse-glow 1s ease-in-out infinite;
+  --tw-shadow-color: #ef4444;
+}

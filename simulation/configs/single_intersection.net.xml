@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SUMO Network Definition for Single Intersection
+4-way intersection with 2 lanes per direction
+-->
+<net version="1.1">
+    <!-- Nodes -->
+    <location netOffset="500.00,500.00" convBoundary="0.00,0.00,1000.00,1000.00"/>
+    
+    <!-- Junction (Intersection Center) -->
+    <junction id="intersection" type="traffic_light" x="500.00" y="500.00" 
+              incLanes="north_to_center_0 north_to_center_1 east_to_center_0 east_to_center_1 south_to_center_0 south_to_center_1 west_to_center_0 west_to_center_1"
+              intLanes="" shape="492.00,508.00 508.00,508.00 508.00,492.00 492.00,492.00"/>
+    
+    <!-- Entry/Exit Nodes -->
+    <junction id="north" type="priority" x="500.00" y="1000.00"/>
+    <junction id="south" type="priority" x="500.00" y="0.00"/>
+    <junction id="east" type="priority" x="1000.00" y="500.00"/>
+    <junction id="west" type="priority" x="0.00" y="500.00"/>
+    
+    <!-- Edges (Roads) -->
+    <!-- North approach -->
+    <edge id="north_to_center" from="north" to="intersection" priority="1" numLanes="2" speed="13.89">
+        <lane id="north_to_center_0" index="0"/>
+        <lane id="north_to_center_1" index="1"/>
+    </edge>
+    <edge id="center_to_north" from="intersection" to="north" priority="1" numLanes="2" speed="13.89">
+        <lane id="center_to_north_0" index="0"/>
+        <lane id="center_to_north_1" index="1"/>
+    </edge>
+    
+    <!-- South approach -->
+    <edge id="south_to_center" from="south" to="intersection" priority="1" numLanes="2" speed="13.89">
+        <lane id="south_to_center_0" index="0"/>
+        <lane id="south_to_center_1" index="1"/>
+    </edge>
+    <edge id="center_to_south" from="intersection" to="south" priority="1" numLanes="2" speed="13.89">
+        <lane id="center_to_south_0" index="0"/>
+        <lane id="center_to_south_1" index="1"/>
+    </edge>
+    
+    <!-- East approach -->
+    <edge id="east_to_center" from="east" to="intersection" priority="1" numLanes="2" speed="13.89">
+        <lane id="east_to_center_0" index="0"/>
+        <lane id="east_to_center_1" index="1"/>
+    </edge>
+    <edge id="center_to_east" from="intersection" to="east" priority="1" numLanes="2" speed="13.89">
+        <lane id="center_to_east_0" index="0"/>
+        <lane id="center_to_east_1" index="1"/>
+    </edge>
+    
+    <!-- West approach -->
+    <edge id="west_to_center" from="west" to="intersection" priority="1" numLanes="2" speed="13.89">
+        <lane id="west_to_center_0" index="0"/>
+        <lane id="west_to_center_1" index="1"/>
+    </edge>
+    <edge id="center_to_west" from="intersection" to="west" priority="1" numLanes="2" speed="13.89">
+        <lane id="center_to_west_0" index="0"/>
+        <lane id="center_to_west_1" index="1"/>
+    </edge>
+    
+    <!-- Traffic Light Logic (4-phase) -->
+    <tlLogic id="intersection" type="static" programID="adaptive" offset="0">
+        <!-- Phase 0: North-South Green -->
+        <phase duration="30" state="GGGGrrrrGGGGrrrr"/>
+        <!-- Phase 1: North-South Yellow -->
+        <phase duration="3" state="yyyyrrrryyyyrrrr"/>
+        <!-- Phase 2: East-West Green -->
+        <phase duration="30" state="rrrrGGGGrrrrGGGG"/>
+        <!-- Phase 3: East-West Yellow -->
+        <phase duration="3" state="rrrryyyyrrrryyyy"/>
+    </tlLogic>
+</net>

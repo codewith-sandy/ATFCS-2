@@ -1,0 +1,181 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: traffic_postgres
+    environment:
+      POSTGRES_DB: traffic_db
+      POSTGRES_USER: traffic_user
+      POSTGRES_PASSWORD: traffic_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U traffic_user -d traffic_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - traffic_network
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: traffic_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - traffic_network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: traffic_backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://traffic_user:traffic_password@postgres:5432/traffic_db
+      - REDIS_URL=redis://redis:6379
+      - SUMO_HOME=/opt/sumo
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend:/app/backend
+      - ./ai_models:/app/ai_models
+      - ./data_pipeline:/app/data_pipeline
+      - ./simulation:/app/simulation
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./training:/app/training
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - traffic_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # React Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: traffic_dashboard
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_WS_URL=ws://localhost:8000
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - traffic_network
+
+  # Camera Stream Service (processes RTSP feeds)
+  camera_service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: traffic_camera_service
+    command: python -c "from backend.services.camera_stream_service import get_camera_service; import time; s=get_camera_service(); time.sleep(float('inf'))"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://traffic_user:traffic_password@postgres:5432/traffic_db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./backend:/app/backend
+      - ./ai_models:/app/ai_models
+      - ./models:/app/models
+      - ./data:/app/data
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - traffic_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Model Training Service (handles background training)
+  training_service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: traffic_training_service
+    command: python -c "from backend.services.model_training_service import get_training_service; import time; s=get_training_service(); time.sleep(float('inf'))"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://traffic_user:traffic_password@postgres:5432/traffic_db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./backend:/app/backend
+      - ./ai_models:/app/ai_models
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./training:/app/training
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - traffic_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Video Stream Processor (optional microservice)
+  video_processor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: traffic_video_processor
+    command: python -m data_pipeline.video_processor
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://traffic_user:traffic_password@postgres:5432/traffic_db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./data_pipeline:/app/data_pipeline
+      - ./ai_models:/app/ai_models
+      - ./data:/app/data
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - traffic_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  traffic_network:
+    driver: bridge

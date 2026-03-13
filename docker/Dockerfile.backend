@@ -1,0 +1,50 @@
+# Backend Dockerfile for Adaptive Traffic Flow Management System
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install SUMO (Optional - for full simulation support)
+RUN apt-get update && apt-get install -y \
+    sumo \
+    sumo-tools \
+    || echo "SUMO installation optional, continuing..."
+
+# Set SUMO environment variable
+ENV SUMO_HOME=/usr/share/sumo
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY ai_models/ ./ai_models/
+COPY data_pipeline/ ./data_pipeline/
+COPY simulation/ ./simulation/
+COPY backend/ ./backend/
+
+# Create directories for models and data
+RUN mkdir -p /app/models /app/data /app/logs
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Run the application
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
